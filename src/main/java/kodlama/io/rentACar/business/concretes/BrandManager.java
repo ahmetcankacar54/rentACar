@@ -10,6 +10,7 @@ import kodlama.io.rentACar.business.dto.responses.update.UpdateBrandResponse;
 import kodlama.io.rentACar.entities.concretes.Brand;
 import kodlama.io.rentACar.repository.abstracts.BrandRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,14 +21,14 @@ import java.util.List;
 public class BrandManager implements BrandService {
 
     private final BrandRepository repository;
+    private final ModelMapper mapper;
     @Override
     public List<GetAllBrandsResponse> getALl() {
         List<Brand> brands = repository.findAll();
-        List<GetAllBrandsResponse> response = new ArrayList<>();
-
-        for (Brand brand : brands) {
-            response.add(new GetAllBrandsResponse(brand.getId(), brand.getName()));
-        }
+        List<GetAllBrandsResponse> response = brands
+                .stream()
+                .map(brand -> mapper.map(brand, GetAllBrandsResponse.class))
+                .toList();
 
         return response;
     }
@@ -37,37 +38,27 @@ public class BrandManager implements BrandService {
         checkIfBrandExist(id);
         Brand brand = repository.findById(id).orElseThrow();
 
-        GetBrandResponse response = new GetBrandResponse();
-        response.setId(brand.getId());
-        response.setName(brand.getName());
-
+        GetBrandResponse response = mapper.map(brand, GetBrandResponse.class);
         return response;
     }
 
     @Override
     public CreateBrandResponse add(CreateBrandRequest request) {
-        Brand brand = new Brand();
-        brand.setName(request.getName());
+        Brand brand = mapper.map(request, Brand.class);
+        brand.setId(0);
         repository.save(brand);
 
-        CreateBrandResponse response = new CreateBrandResponse();
-        response.setId(brand.getId());
-        response.setName(brand.getName());
-
+        CreateBrandResponse response = mapper.map(brand, CreateBrandResponse.class);
         return response;
     }
 
     @Override
     public UpdateBrandResponse update(int id, UpdateBrandRequest request) {
         checkIfBrandExist(id);
-        Brand brand = new Brand();
-        brand.setId(id);
-        brand.setName(request.getName());
+        Brand brand = mapper.map(request, Brand.class);
         repository.save(brand);
 
-        UpdateBrandResponse response = new UpdateBrandResponse();
-        response.setId(id);
-        response.setName(request.getName());
+        UpdateBrandResponse response = mapper.map(brand, UpdateBrandResponse.class);
         return response;
     }
 
