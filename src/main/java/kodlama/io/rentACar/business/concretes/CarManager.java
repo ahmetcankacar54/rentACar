@@ -7,7 +7,7 @@ import kodlama.io.rentACar.business.dto.responses.create.CreateCarResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetAllCarResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetCarResponse;
 import kodlama.io.rentACar.business.dto.responses.update.UpdateCarResponse;
-import kodlama.io.rentACar.constants.CarStates;
+import kodlama.io.rentACar.entities.enums.State;
 import kodlama.io.rentACar.entities.concretes.Car;
 import kodlama.io.rentACar.repository.abstracts.CarRepository;
 import lombok.AllArgsConstructor;
@@ -22,6 +22,7 @@ public class CarManager implements CarService {
 
     private final CarRepository repository;
     private final ModelMapper mapper;
+
     @Override
     public List<GetAllCarResponse> getAll(boolean showAvailable) {
 
@@ -41,6 +42,7 @@ public class CarManager implements CarService {
     public CreateCarResponse add(CreateCarRequest request) {
         Car car = mapper.map(request, Car.class);
         car.setId(0);
+        car.setState(State.AVAILABLE);
         Car createdCar = repository.save(car);
 
         CreateCarResponse response = mapper.map(createdCar, CreateCarResponse.class);
@@ -67,12 +69,19 @@ public class CarManager implements CarService {
         repository.deleteById(id);
     }
 
+    @Override
+    public void changeState(int id, State state) {
+        Car car = repository.findById(id).orElseThrow();
+        car.setState(state);
+        repository.save(car);
+    }
+
 
     // Business Rules
 
 
     private void checkIfCarExistById(int id) {
-        if(!repository.existsById(id)) {
+        if (!repository.existsById(id)) {
             throw new RuntimeException("There is no car belong that id!");
         }
     }
@@ -83,13 +92,13 @@ public class CarManager implements CarService {
     }
 
     private static void checkIfCarIsRented(Car car, UpdateCarRequest request) {
-        if ((car.getState() == CarStates.RENTED) && (request.getState() == CarStates.MAINTENANCE)) {
+        if ((car.getState() == State.RENTED) && (request.getState() == State.MAINTENANCE)) {
             throw new RuntimeException("The Car is currently occupied cannot send to the maintenance!");
         }
     }
 
     private static void checkIfCarInMaintenance(Car car, UpdateCarRequest request) {
-        if (car.getState() == CarStates.MAINTENANCE && request.getState() == CarStates.MAINTENANCE) {
+        if (car.getState() == State.MAINTENANCE && request.getState() == State.MAINTENANCE) {
             throw new RuntimeException("The Car is already in maintenance!");
         }
     }
@@ -100,7 +109,7 @@ public class CarManager implements CarService {
                     .findAll()
                     .stream()
                     .map(car -> mapper.map(car, GetAllCarResponse.class))
-                    .filter(getAllCarResponse -> getAllCarResponse.getState() == CarStates.AVAILABLE)
+                    .filter(getAllCarResponse -> getAllCarResponse.getState() == State.AVAILABLE)
                     .toList();
             return response;
         } else {
