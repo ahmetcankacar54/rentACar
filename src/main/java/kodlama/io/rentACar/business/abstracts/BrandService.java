@@ -6,7 +6,6 @@ import kodlama.io.rentACar.business.dto.responses.create.CreateBrandResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetAllBrandsResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetBrandResponse;
 import kodlama.io.rentACar.business.dto.responses.update.UpdateBrandResponse;
-import kodlama.io.rentACar.entities.concretes.Brand;
 
 import java.util.List;
 

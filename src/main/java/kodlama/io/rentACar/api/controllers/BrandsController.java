@@ -7,7 +7,6 @@ import kodlama.io.rentACar.business.dto.responses.create.CreateBrandResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetAllBrandsResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetBrandResponse;
 import kodlama.io.rentACar.business.dto.responses.update.UpdateBrandResponse;
-import kodlama.io.rentACar.entities.concretes.Brand;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/products")
+@RequestMapping("/api/brands")
 public class BrandsController {
 
     private final BrandService service;
