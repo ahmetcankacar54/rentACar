@@ -24,9 +24,15 @@ public class CarManager implements CarService {
     private final ModelMapper mapper;
 
     @Override
-    public List<GetAllCarResponse> getAll(boolean showAvailable) {
+    public List<GetAllCarResponse> getAll(boolean includeMaintenance) {
+        List<Car> cars = filetCarsByMaintenanceState(includeMaintenance);
 
-        return checkShowAvailable(showAvailable);
+        List<GetAllCarResponse> response = cars
+                .stream()
+                .map(car -> mapper.map(car, GetAllCarResponse.class))
+                .toList();
+
+        return response;
 
     }
 
@@ -103,23 +109,13 @@ public class CarManager implements CarService {
         }
     }
 
-    private List<GetAllCarResponse> checkShowAvailable(boolean showAvailable) {
-        if (showAvailable) {
-            List<GetAllCarResponse> response = repository
-                    .findAll()
-                    .stream()
-                    .map(car -> mapper.map(car, GetAllCarResponse.class))
-                    .filter(getAllCarResponse -> getAllCarResponse.getState() == State.AVAILABLE)
-                    .toList();
-            return response;
-        } else {
-            List<GetAllCarResponse> response = repository
-                    .findAll()
-                    .stream()
-                    .map(car -> mapper.map(car, GetAllCarResponse.class))
-                    .toList();
+    private List<Car> filetCarsByMaintenanceState(boolean includeMaintenance) {
+        if (includeMaintenance) {
 
-            return response;
+            return repository.findAll();
+        } else {
+
+            return repository.findAllByStateIsNot(State.MAINTENANCE);
         }
     }
 }

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateMaintenanceRequest {
+    private int carId;
     private String information;
     private boolean isCompleted;
     private LocalDateTime startDate;

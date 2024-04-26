@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface CarService {
 
-    List<GetAllCarResponse> getAll(boolean showAvailable);
+    List<GetAllCarResponse> getAll(boolean includeMaintenance);
     GetCarResponse getById(int id);
     CreateCarResponse add(CreateCarRequest request);
     UpdateCarResponse update(int id, UpdateCarRequest request);

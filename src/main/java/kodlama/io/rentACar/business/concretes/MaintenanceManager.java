@@ -36,6 +36,7 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public GetMaintenanceResponse getById(int id) {
+        checkIfMaintenanceExists(id);
         Maintenance maintenance = repository.findById(id).orElseThrow();
         GetMaintenanceResponse response = mapper.map(maintenance, GetMaintenanceResponse.class);
 
@@ -44,8 +45,9 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public GetMaintenanceResponse returnCarFromMaintenance(int carId) {
+        checkIfCarIsExists(carId);
         Maintenance maintenance = repository.findByCarIdAndIsCompletedIsFalse(carId);
-        checkMaintenanceIsTrue(carId);
+        checkIfCarIsUnderMaintenance(carId);
         maintenance.setCompleted(true);
         maintenance.setEndDate(LocalDateTime.now());
         repository.save(maintenance);
@@ -57,7 +59,9 @@ public class MaintenanceManager implements MaintenanceService {
 
     @Override
     public CreateMaintenanceResponse add(CreateMaintenanceRequest request) {
-        checkMaintenanceIsFalse(request);
+        checkIfCarIsExists(request.getCarId());
+        checkIfCarIsNotUnderMaintenance(request);
+        checkCarAvailabilityForMaintenance(request);
         Maintenance maintenance = mapper.map(request, Maintenance.class);
         maintenance.setId(0);
         maintenance.setCompleted(false);
@@ -70,8 +74,11 @@ public class MaintenanceManager implements MaintenanceService {
         return response;
     }
 
+
     @Override
     public UpdateMaintenanceResponse update(int id, UpdateMaintenanceRequest request) {
+        checkIfMaintenanceExists(id);
+        checkIfCarIsExists(request.getCarId());
         Maintenance maintenance = mapper.map(request, Maintenance.class);
         maintenance.setId(id);
         repository.save(maintenance);
@@ -80,22 +87,43 @@ public class MaintenanceManager implements MaintenanceService {
         return response;
     }
 
+
     @Override
     public void delete(int id) {
+        checkIfMaintenanceExists(id);
         repository.deleteById(id);
     }
 
     // Business Rules
 
 
+    private void checkIfCarIsExists(int id) {
+        if (carService.getById(id) == null) {
+            throw new RuntimeException("There is no car with that id!");
+        }
+    }
 
-    private void checkMaintenanceIsFalse(CreateMaintenanceRequest request) {
+    private void checkIfMaintenanceExists(int id) {
+        if (!repository.existsById(id)) {
+            throw new RuntimeException("There is no maintenance with that id!");
+        }
+    }
+
+
+    private void checkCarAvailabilityForMaintenance(CreateMaintenanceRequest request) {
+        if (carService.getById(request.getCarId()).getState().equals(State.RENTED)) {
+            throw new RuntimeException("The car is already rented. Can't get to the maintenance!");
+        }
+    }
+
+
+    private void checkIfCarIsNotUnderMaintenance(CreateMaintenanceRequest request) {
         if (repository.existsByCarIdAndIsCompletedIsFalse(request.getCarId())) {
             throw new RuntimeException("The car is already in maintenance!");
         }
     }
 
-    private void checkMaintenanceIsTrue(int carId) {
+    private void checkIfCarIsUnderMaintenance(int carId) {
         if (!repository.existsByCarIdAndIsCompletedIsFalse(carId)) {
             throw new RuntimeException("The car is already in maintenance!");
         }
