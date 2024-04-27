@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetAllCarResponse {
+public class GetAllCarsResponse {
     private int id;
     private int modelId;
     private int modelYear;

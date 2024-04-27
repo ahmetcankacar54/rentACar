@@ -4,7 +4,7 @@ import kodlama.io.rentACar.business.abstracts.CarService;
 import kodlama.io.rentACar.business.dto.requests.create.CreateCarRequest;
 import kodlama.io.rentACar.business.dto.requests.update.UpdateCarRequest;
 import kodlama.io.rentACar.business.dto.responses.create.CreateCarResponse;
-import kodlama.io.rentACar.business.dto.responses.get.GetAllCarResponse;
+import kodlama.io.rentACar.business.dto.responses.get.GetAllCarsResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetCarResponse;
 import kodlama.io.rentACar.business.dto.responses.update.UpdateCarResponse;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public class CarsController {
     private final CarService service;
 
     @GetMapping
-    public List<GetAllCarResponse> getAll(@RequestParam(defaultValue = "true") boolean includeMaintenance) {
+    public List<GetAllCarsResponse> getAll(@RequestParam(defaultValue = "true") boolean includeMaintenance) {
         return service.getAll(includeMaintenance);
     }
 

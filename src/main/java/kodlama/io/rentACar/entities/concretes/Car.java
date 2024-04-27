@@ -32,5 +32,8 @@ public class Car {
 
     @OneToMany(mappedBy = "car")
     private List<Maintenance> maintenances; // Eger Car tablosunda maintenance_id olarak tutmak isetmiyorsak, List seklinde calisiyoruz.
+
+    @OneToMany(mappedBy = "car")
+    private List<Rental> rentals;
 }
 

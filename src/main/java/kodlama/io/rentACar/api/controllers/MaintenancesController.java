@@ -4,7 +4,7 @@ import kodlama.io.rentACar.business.abstracts.MaintenanceService;
 import kodlama.io.rentACar.business.dto.requests.create.CreateMaintenanceRequest;
 import kodlama.io.rentACar.business.dto.requests.update.UpdateMaintenanceRequest;
 import kodlama.io.rentACar.business.dto.responses.create.CreateMaintenanceResponse;
-import kodlama.io.rentACar.business.dto.responses.get.GetAllMaintenanceResponse;
+import kodlama.io.rentACar.business.dto.responses.get.GetAllMaintenancesResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetMaintenanceResponse;
 import kodlama.io.rentACar.business.dto.responses.update.UpdateMaintenanceResponse;
 import lombok.AllArgsConstructor;
@@ -15,12 +15,12 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/maintenance")
+@RequestMapping("/api/maintenances")
 public class MaintenancesController {
     private final MaintenanceService service;
 
     @GetMapping
-    public List<GetAllMaintenanceResponse> getALl() {
+    public List<GetAllMaintenancesResponse> getALl() {
         return service.getALl();
     }
 
@@ -35,8 +35,8 @@ public class MaintenancesController {
         return service.add(request);
     }
 
-    @PutMapping("/return/{carId}")
-    public GetMaintenanceResponse returnCarFromMaintenance(@PathVariable int carId) {
+    @PutMapping("/return")
+    public GetMaintenanceResponse returnCarFromMaintenance(@RequestParam int carId) {
         return service.returnCarFromMaintenance(carId);
     }
 

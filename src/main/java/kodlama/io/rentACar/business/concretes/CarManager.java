@@ -4,7 +4,7 @@ import kodlama.io.rentACar.business.abstracts.CarService;
 import kodlama.io.rentACar.business.dto.requests.create.CreateCarRequest;
 import kodlama.io.rentACar.business.dto.requests.update.UpdateCarRequest;
 import kodlama.io.rentACar.business.dto.responses.create.CreateCarResponse;
-import kodlama.io.rentACar.business.dto.responses.get.GetAllCarResponse;
+import kodlama.io.rentACar.business.dto.responses.get.GetAllCarsResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetCarResponse;
 import kodlama.io.rentACar.business.dto.responses.update.UpdateCarResponse;
 import kodlama.io.rentACar.entities.enums.State;
@@ -24,12 +24,12 @@ public class CarManager implements CarService {
     private final ModelMapper mapper;
 
     @Override
-    public List<GetAllCarResponse> getAll(boolean includeMaintenance) {
+    public List<GetAllCarsResponse> getAll(boolean includeMaintenance) {
         List<Car> cars = filetCarsByMaintenanceState(includeMaintenance);
 
-        List<GetAllCarResponse> response = cars
+        List<GetAllCarsResponse> response = cars
                 .stream()
-                .map(car -> mapper.map(car, GetAllCarResponse.class))
+                .map(car -> mapper.map(car, GetAllCarsResponse.class))
                 .toList();
 
         return response;

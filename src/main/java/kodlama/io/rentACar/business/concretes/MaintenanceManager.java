@@ -5,7 +5,7 @@ import kodlama.io.rentACar.business.abstracts.MaintenanceService;
 import kodlama.io.rentACar.business.dto.requests.create.CreateMaintenanceRequest;
 import kodlama.io.rentACar.business.dto.requests.update.UpdateMaintenanceRequest;
 import kodlama.io.rentACar.business.dto.responses.create.CreateMaintenanceResponse;
-import kodlama.io.rentACar.business.dto.responses.get.GetAllMaintenanceResponse;
+import kodlama.io.rentACar.business.dto.responses.get.GetAllMaintenancesResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetMaintenanceResponse;
 import kodlama.io.rentACar.business.dto.responses.update.UpdateMaintenanceResponse;
 import kodlama.io.rentACar.entities.concretes.Maintenance;
@@ -25,11 +25,11 @@ public class MaintenanceManager implements MaintenanceService {
     private final ModelMapper mapper;
     private final CarService carService;
     @Override
-    public List<GetAllMaintenanceResponse> getALl() {
+    public List<GetAllMaintenancesResponse> getALl() {
         List<Maintenance> maintenances = repository.findAll();
-        List<GetAllMaintenanceResponse> response = maintenances
+        List<GetAllMaintenancesResponse> response = maintenances
                 .stream()
-                .map(maintenance -> mapper.map(maintenance, GetAllMaintenanceResponse.class))
+                .map(maintenance -> mapper.map(maintenance, GetAllMaintenancesResponse.class))
                 .toList();
         return response;
     }
@@ -91,8 +91,10 @@ public class MaintenanceManager implements MaintenanceService {
     @Override
     public void delete(int id) {
         checkIfMaintenanceExists(id);
+        makeCarAvailableIfIsCompletedFalse(id);
         repository.deleteById(id);
     }
+
 
     // Business Rules
 
@@ -126,6 +128,14 @@ public class MaintenanceManager implements MaintenanceService {
     private void checkIfCarIsUnderMaintenance(int carId) {
         if (!repository.existsByCarIdAndIsCompletedIsFalse(carId)) {
             throw new RuntimeException("The car is already in maintenance!");
+        }
+    }
+
+
+    private void makeCarAvailableIfIsCompletedFalse(int id) {
+        if(!repository.findById(id).get().isCompleted()) {
+            int carId = repository.findById(id).get().getCar().getId();
+            carService.changeState(carId, State.AVAILABLE);
         }
     }
 }
