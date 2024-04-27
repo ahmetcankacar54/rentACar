@@ -41,6 +41,7 @@ public class RentalsController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     void delete(@PathVariable int id) {
         service.delete(id);
     }
