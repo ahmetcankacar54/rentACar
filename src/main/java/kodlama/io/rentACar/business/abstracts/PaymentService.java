@@ -1,6 +1,6 @@
 package kodlama.io.rentACar.business.abstracts;
 
-import kodlama.io.rentACar.Core.dto.CreateRentalPaymentRequest;
+import kodlama.io.rentACar.Common.dto.CreateRentalPaymentRequest;
 import kodlama.io.rentACar.business.dto.requests.create.CreatePaymentRequest;
 import kodlama.io.rentACar.business.dto.requests.update.UpdatePaymentRequest;
 import kodlama.io.rentACar.business.dto.responses.create.CreatePaymentResponse;

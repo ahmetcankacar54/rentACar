@@ -42,7 +42,7 @@ public class ModelsController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UpdateModelResponse add(@PathVariable int id, UpdateModelRequest request) {
+    public UpdateModelResponse add(@PathVariable int id, @RequestBody UpdateModelRequest request) {
         UpdateModelResponse response = service.update(id, request);
         return response;
     }

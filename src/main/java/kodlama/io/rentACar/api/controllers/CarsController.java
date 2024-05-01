@@ -31,12 +31,12 @@ public class CarsController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateCarResponse add(CreateCarRequest request) {
+    public CreateCarResponse add(@RequestBody CreateCarRequest request) {
         return service.add(request);
     }
 
     @PutMapping("/{id}")
-    public UpdateCarResponse update(@PathVariable int id ,UpdateCarRequest request) {
+    public UpdateCarResponse update(@PathVariable int id , @RequestBody UpdateCarRequest request) {
         return service.update(id, request);
     }
 

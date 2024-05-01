@@ -1,4 +1,4 @@
-package kodlama.io.rentACar.Core.dto;
+package kodlama.io.rentACar.Common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

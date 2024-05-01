@@ -1,6 +1,6 @@
 package kodlama.io.rentACar.business.concretes;
 
-import kodlama.io.rentACar.Core.dto.CreateRentalPaymentRequest;
+import kodlama.io.rentACar.Common.dto.CreateRentalPaymentRequest;
 import kodlama.io.rentACar.adapters.FakePosServiceAdapter;
 import kodlama.io.rentACar.business.abstracts.PaymentService;
 import kodlama.io.rentACar.business.dto.requests.create.CreatePaymentRequest;
