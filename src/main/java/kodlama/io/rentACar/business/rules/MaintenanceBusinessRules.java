@@ -2,6 +2,7 @@ package kodlama.io.rentACar.business.rules;
 
 import kodlama.io.rentACar.Common.constants.Messages;
 import kodlama.io.rentACar.business.abstracts.CarService;
+import kodlama.io.rentACar.core.exceptions.BusinessException;
 import kodlama.io.rentACar.entities.enums.State;
 import kodlama.io.rentACar.repository.abstracts.MaintenanceRepository;
 import lombok.AllArgsConstructor;
@@ -15,25 +16,25 @@ public class MaintenanceBusinessRules {
 
     public void checkIfMaintenanceExists(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException(Messages.Maintenance.NotExists);
+            throw new BusinessException(Messages.Maintenance.NotExists);
         }
     }
 
     public void checkIfCarIsNotUnderMaintenance(int carId) {
         if (repository.existsByCarIdAndIsCompletedIsFalse(carId)) {
-            throw new RuntimeException(Messages.Maintenance.CarNotExists);
+            throw new BusinessException(Messages.Maintenance.CarNotExists);
         }
     }
 
     public void checkIfCarIsUnderMaintenance(int carId) {
         if (!repository.existsByCarIdAndIsCompletedIsFalse(carId)) {
-            throw new RuntimeException(Messages.Maintenance.CarExists);
+            throw new BusinessException(Messages.Maintenance.CarExists);
         }
     }
 
     public void checkCarAvailabilityForMaintenance(int carId) {
         if (carService.getById(carId).getState().equals(State.RENTED)) {
-            throw new RuntimeException(Messages.Maintenance.CarIsRented);
+            throw new BusinessException(Messages.Maintenance.CarIsRented);
         }
     }
 

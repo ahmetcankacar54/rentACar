@@ -1,6 +1,7 @@
 package kodlama.io.rentACar.business.rules;
 
 import kodlama.io.rentACar.Common.constants.Messages;
+import kodlama.io.rentACar.core.exceptions.BusinessException;
 import kodlama.io.rentACar.repository.abstracts.ModelRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,14 +13,14 @@ public class ModelBusinessRules {
 
     public void checkIfModelExistById(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException(Messages.Model.NotExists);
+            throw new BusinessException(Messages.Model.NotExists);
         }
     }
 
     public
     void checkIfModelExistByName(String name) {
         if (repository.existsByNameIgnoreCase(name)) {
-            throw new RuntimeException(Messages.Model.Exists);
+            throw new BusinessException(Messages.Model.Exists);
         }
     }
 }

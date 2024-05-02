@@ -2,6 +2,7 @@ package kodlama.io.rentACar.business.rules;
 
 import kodlama.io.rentACar.Common.constants.Messages;
 import kodlama.io.rentACar.Common.dto.CreateRentalPaymentRequest;
+import kodlama.io.rentACar.core.exceptions.BusinessException;
 import kodlama.io.rentACar.repository.abstracts.PaymentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,19 +14,19 @@ public class PaymentBusinessRules {
 
     public void checkIfPaymentExists(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException(Messages.Payment.NotFound);
+            throw new BusinessException(Messages.Payment.NotFound);
         }
     }
 
     public void checkIfCardExists(String cardNumber) {
         if (repository.existsByCardNumber(cardNumber)) {
-            throw new RuntimeException(Messages.Payment.CardNumberAlreadyExists);
+            throw new BusinessException(Messages.Payment.CardNumberAlreadyExists);
         }
     }
 
     public void checkIfBalanceIsEnough(double price, double balance) {
         if (balance < price) {
-            throw new RuntimeException(Messages.Payment.InsufficientBalance);
+            throw new BusinessException(Messages.Payment.InsufficientBalance);
         }
     }
 
@@ -37,7 +38,7 @@ public class PaymentBusinessRules {
                 request.getCardExpirationMonth(),
                 request.getCardCvv()
         )) {
-            throw new RuntimeException(Messages.Payment.NotValid);
+            throw new BusinessException(Messages.Payment.NotValid);
         }
     }
 }
