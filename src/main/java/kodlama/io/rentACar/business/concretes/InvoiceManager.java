@@ -1,6 +1,7 @@
 package kodlama.io.rentACar.business.concretes;
 
 
+import kodlama.io.rentACar.Common.constants.Messages;
 import kodlama.io.rentACar.business.abstracts.InvoiceService;
 import kodlama.io.rentACar.business.dto.requests.create.CreateInvoiceRequest;
 import kodlama.io.rentACar.business.dto.requests.update.UpdateInvoiceRequest;
@@ -8,6 +9,7 @@ import kodlama.io.rentACar.business.dto.responses.create.CreateInvoiceResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetAllInvoicesResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetInvoiceResponse;
 import kodlama.io.rentACar.business.dto.responses.update.UpdateInvoiceResponse;
+import kodlama.io.rentACar.business.rules.InvoiceBusinessRules;
 import kodlama.io.rentACar.entities.concretes.Invoice;
 import kodlama.io.rentACar.repository.abstracts.InvoiceRepository;
 import lombok.AllArgsConstructor;
@@ -16,7 +18,6 @@ import lombok.Setter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,6 +27,8 @@ import java.util.List;
 public class InvoiceManager implements InvoiceService {
     private final InvoiceRepository repository;
     private final ModelMapper mapper;
+    private final InvoiceBusinessRules rules;
+
     @Override
     public List<GetAllInvoicesResponse> getAll() {
         List<Invoice> invoices = repository.findAll();
@@ -39,7 +42,7 @@ public class InvoiceManager implements InvoiceService {
 
     @Override
     public GetInvoiceResponse getById(int id) {
-        checkIfInvoiceExists(id);
+        rules.checkIfInvoiceExists(id);
         Invoice invoice = repository.findById(id).orElseThrow();
         GetInvoiceResponse response = mapper.map(invoice, GetInvoiceResponse.class);
         return response;
@@ -60,7 +63,7 @@ public class InvoiceManager implements InvoiceService {
 
     @Override
     public UpdateInvoiceResponse update(int id, UpdateInvoiceRequest request) {
-        checkIfInvoiceExists(id);
+        rules.checkIfInvoiceExists(id);
         Invoice invoice = mapper.map(request, Invoice.class);
         invoice.setId(id);
         repository.save(invoice);
@@ -71,18 +74,9 @@ public class InvoiceManager implements InvoiceService {
 
     @Override
     public void delete(int id) {
-        checkIfInvoiceExists(id);
+        rules.checkIfInvoiceExists(id);
         repository.deleteById(id);
 
-    }
-
-    // Business Rules
-
-
-    private void checkIfInvoiceExists(int id) {
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("Can't find the invoice!");
-        }
     }
 
     private static double getTotalPrice(Invoice invoice) {

@@ -1,5 +1,6 @@
 package kodlama.io.rentACar.business.concretes;
 
+import kodlama.io.rentACar.Common.constants.Messages;
 import kodlama.io.rentACar.Common.dto.CreateRentalPaymentRequest;
 import kodlama.io.rentACar.adapters.FakePosServiceAdapter;
 import kodlama.io.rentACar.business.abstracts.PaymentService;
@@ -9,6 +10,7 @@ import kodlama.io.rentACar.business.dto.responses.create.CreatePaymentResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetAllPaymentsResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetPaymentResponse;
 import kodlama.io.rentACar.business.dto.responses.update.UpdatePaymentResponse;
+import kodlama.io.rentACar.business.rules.PaymentBusinessRules;
 import kodlama.io.rentACar.entities.concretes.Payment;
 import kodlama.io.rentACar.repository.abstracts.PaymentRepository;
 import lombok.AllArgsConstructor;
@@ -23,6 +25,8 @@ public class PaymentManager implements PaymentService {
     private final PaymentRepository repository;
     private final ModelMapper mapper;
     private final FakePosServiceAdapter posService;
+    private final PaymentBusinessRules rules;
+
     @Override
     public List<GetAllPaymentsResponse> getAll() {
         List<Payment> payments = repository.findAll();
@@ -36,7 +40,7 @@ public class PaymentManager implements PaymentService {
 
     @Override
     public GetPaymentResponse getById(int id) {
-        checkIfPaymentExists(id);
+        rules.checkIfPaymentExists(id);
         Payment payment = repository.findById(id).orElseThrow();
         GetPaymentResponse response = mapper.map(payment, GetPaymentResponse.class);
 
@@ -45,7 +49,7 @@ public class PaymentManager implements PaymentService {
 
     @Override
     public CreatePaymentResponse add(CreatePaymentRequest request) {
-        checkIfCardExists(request);
+        rules.checkIfCardExists(request.getCardNumber());
         Payment payment = mapper.map(request, Payment.class);
         payment.setId(0);
         repository.save(payment);
@@ -57,7 +61,7 @@ public class PaymentManager implements PaymentService {
 
     @Override
     public UpdatePaymentResponse update(int id, UpdatePaymentRequest request) {
-        checkIfPaymentExists(id);
+        rules.checkIfPaymentExists(id);
         Payment payment = mapper.map(request, Payment.class);
         payment.setId(id);
         repository.save(payment);
@@ -68,53 +72,20 @@ public class PaymentManager implements PaymentService {
 
     @Override
     public void delete(int id) {
-        checkIfPaymentExists(id);
+        rules.checkIfPaymentExists(id);
         repository.deleteById(id);
     }
 
     @Override
     public void processRentalPayment(CreateRentalPaymentRequest request) {
-        checkIfPaymentIsValid(request);
+        rules.checkIfPaymentIsValid(request);
         Payment payment = repository.findByCardNumber(request.getCardNumber());
         double balance = payment.getBalance();
         double price = request.getPrice();
-        checkIfBalanceIsEnough(price, balance);
+        rules.checkIfBalanceIsEnough(price, balance);
         posService.pay(); // fake pos service
         payment.setBalance(balance - price);
         repository.save(payment);
     }
 
-
-    // Business Rules
-
-
-    private void checkIfPaymentExists(int id) {
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("Payment cannot be found!");
-        }
-    }
-
-    private void checkIfCardExists(CreatePaymentRequest request) {
-        if (repository.existsByCardNumber(request.getCardNumber())) {
-            throw new RuntimeException("The card number is already exist!");
-        }
-    }
-
-    private void checkIfBalanceIsEnough(double price, double balance) {
-        if (balance < price) {
-            throw new RuntimeException("Insufficient balance!");
-        }
-    }
-
-    private void checkIfPaymentIsValid(CreateRentalPaymentRequest request) {
-        if (!repository.existsByCardNumberAndCardHolderAndCardExpirationYearAndCardExpirationMonthAndCardCvv(
-                request.getCardNumber(),
-                request.getCardHolder(),
-                request.getCardExpirationYear(),
-                request.getCardExpirationMonth(),
-                request.getCardCvv()
-        )) {
-            throw new RuntimeException("Card information is wrong!");
-        }
-    }
 }

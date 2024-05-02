@@ -7,6 +7,7 @@ import kodlama.io.rentACar.business.dto.responses.create.CreateBrandResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetAllBrandsResponse;
 import kodlama.io.rentACar.business.dto.responses.get.GetBrandResponse;
 import kodlama.io.rentACar.business.dto.responses.update.UpdateBrandResponse;
+import kodlama.io.rentACar.business.rules.BrandBusinessRules;
 import kodlama.io.rentACar.entities.concretes.Brand;
 import kodlama.io.rentACar.repository.abstracts.BrandRepository;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,8 @@ public class BrandManager implements BrandService {
 
     private final BrandRepository repository;
     private final ModelMapper mapper;
+    private final BrandBusinessRules rules;
+
     @Override
     public List<GetAllBrandsResponse> getALl() {
         List<Brand> brands = repository.findAll();
@@ -34,7 +37,7 @@ public class BrandManager implements BrandService {
 
     @Override
     public GetBrandResponse getById(int id) {
-        checkIfBrandExistById(id);
+        rules.checkIfBrandExistById(id);
         Brand brand = repository.findById(id).orElseThrow();
 
         GetBrandResponse response = mapper.map(brand, GetBrandResponse.class);
@@ -43,7 +46,7 @@ public class BrandManager implements BrandService {
 
     @Override
     public CreateBrandResponse add(CreateBrandRequest request) {
-        checkIfBrandExistByName(request.getName());
+        rules.checkIfBrandExistByName(request.getName());
         Brand brand = mapper.map(request, Brand.class);
         brand.setId(0);
         repository.save(brand);
@@ -54,7 +57,7 @@ public class BrandManager implements BrandService {
 
     @Override
     public UpdateBrandResponse update(int id, UpdateBrandRequest request) {
-        checkIfBrandExistById(id);
+        rules.checkIfBrandExistById(id);
         Brand brand = mapper.map(request, Brand.class);
         brand.setId(id);
         repository.save(brand);
@@ -65,21 +68,8 @@ public class BrandManager implements BrandService {
 
     @Override
     public void delete(int id) {
-        checkIfBrandExistById(id);
+        rules.checkIfBrandExistById(id);
         repository.deleteById(id);
     }
 
-    // Business Rules
-
-    private void checkIfBrandExistById(int id) {
-        if(!repository.existsById(id))
-            throw new IllegalArgumentException("There is no brand with id : " + id);
-    }
-
-
-    private void checkIfBrandExistByName(String name) {
-        if (repository.existsByNameIgnoreCase(name)) {
-            throw new RuntimeException("The brand name already exist in the system!");
-        }
-    }
 }
