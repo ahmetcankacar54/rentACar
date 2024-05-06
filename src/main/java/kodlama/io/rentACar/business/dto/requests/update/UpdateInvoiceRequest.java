@@ -24,15 +24,11 @@ public class UpdateInvoiceRequest {
     private String brandName;
     @NotBlank
     private String plate;
-    @NotNull
     @Min(value = 1999)
     @Max(value = 2024)
     private int modelYear;
-    @NotNull
     private double dailyPrice;
-    @NotNull
     private double totalPrice;
-    @NotNull
     @Min(value = 1 )
     private int rentedForDays;
     private LocalDateTime rentedAt;

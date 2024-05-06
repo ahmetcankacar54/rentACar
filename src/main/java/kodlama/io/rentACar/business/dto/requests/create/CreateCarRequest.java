@@ -4,7 +4,9 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import kodlama.io.rentACar.Common.constants.Messages;
 import kodlama.io.rentACar.Common.constants.Regex;
+import kodlama.io.rentACar.Common.utils.annotations.NotFutureYear;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,13 +19,11 @@ import lombok.Setter;
 public class CreateCarRequest {
     @Min(0)
     private int modelId;
-    @NotNull
     @Min(1996)
-    @Max(2024)
+    @NotFutureYear
     private int modelYear;
-    @Pattern(regexp = Regex.Plate, message = "Plate number must match the pattern!")
+    @Pattern(regexp = Regex.Plate, message = Messages.Car.PlateNotValid)
     private String plate;
-    @NotNull
     @Min(1)
     @Max(100000)
     private double dailyPrice;

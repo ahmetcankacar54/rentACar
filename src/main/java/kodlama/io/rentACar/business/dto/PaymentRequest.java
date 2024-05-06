@@ -23,13 +23,11 @@ public class PaymentRequest {
     @Length(min = 5)
     private String cardHolder;
 
-    @NotNull(message = "The expiration year cannot be empty!")
     @Min(value = 2023, message = "The expiration date cannot be older then 2024!")
     private int cardExpirationYear;
 
     @Min(1)
     @Max(12)
-    @NotNull(message = "The expiration month cannot be empty!")
     private int cardExpirationMonth;
 
     @NotBlank(message = "Card CVV cannot be empty!")
