@@ -20,11 +20,10 @@ public class CarBusinessRules {
         }
     }
 
-    public List<Car> filterCarsByMaintenanceState(boolean includeMaintenance) {
-        if (includeMaintenance) {
-            return repository.findAll();
+    public void checkIfCarExistsByPlate(String plate) {
+        if (repository.existsByPlate(plate)) {
+            throw new BusinessException(Messages.Car.PlateExists);
         }
-        return repository.findAllByStateIsNot(State.MAINTENANCE);
     }
 
 }

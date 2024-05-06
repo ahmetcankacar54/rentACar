@@ -1,5 +1,6 @@
 package kodlama.io.rentACar.api.controllers;
 
+import jakarta.validation.Valid;
 import kodlama.io.rentACar.business.abstracts.CarService;
 import kodlama.io.rentACar.business.dto.requests.create.CreateCarRequest;
 import kodlama.io.rentACar.business.dto.requests.update.UpdateCarRequest;
@@ -31,7 +32,7 @@ public class CarsController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CreateCarResponse add(@RequestBody CreateCarRequest request) {
+    public CreateCarResponse add(@Valid @RequestBody CreateCarRequest request) {
         return service.add(request);
     }
 

@@ -28,7 +28,7 @@ public class CarManager implements CarService {
 
     @Override
     public List<GetAllCarsResponse> getAll(boolean includeMaintenance) {
-        List<Car> cars = rules.filterCarsByMaintenanceState(includeMaintenance);
+        List<Car> cars = filterCarsByMaintenanceState(includeMaintenance);
 
         List<GetAllCarsResponse> response = cars
                 .stream()
@@ -49,6 +49,7 @@ public class CarManager implements CarService {
 
     @Override
     public CreateCarResponse add(CreateCarRequest request) {
+        rules.checkIfCarExistsByPlate(request.getPlate());
         Car car = mapper.map(request, Car.class);
         car.setId(0);
         car.setState(State.AVAILABLE);
@@ -61,6 +62,7 @@ public class CarManager implements CarService {
     @Override
     public UpdateCarResponse update(int id, UpdateCarRequest request) {
         rules.checkIfCarExistById(id);
+        rules.checkIfCarExistsByPlate(request.getPlate());
         Car car = repository.findById(id).orElseThrow();
 
         car = mapper.map(request, Car.class);
@@ -82,6 +84,14 @@ public class CarManager implements CarService {
         Car car = repository.findById(id).orElseThrow();
         car.setState(state);
         repository.save(car);
+    }
+
+
+    public List<Car> filterCarsByMaintenanceState(boolean includeMaintenance) {
+        if (includeMaintenance) {
+            return repository.findAll();
+        }
+        return repository.findAllByStateIsNot(State.MAINTENANCE);
     }
 
 }
